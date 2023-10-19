@@ -378,6 +378,9 @@ class VitsArgs(Coqpit):
 
         hidden_channels (int):
             Number of hidden channels of the model. Defaults to 192.
+            
+        num_hidden_channels_dp (int):
+            Number of hidden channels of the duration predictor. Defaults to 256.
 
         hidden_channels_ffn_text_encoder (int):
             Number of hidden channels of the feed-forward layers of the text encoder transformer. Defaults to 256.
@@ -557,6 +560,7 @@ class VitsArgs(Coqpit):
     kernel_size_flow: int = 5
     dilation_rate_flow: int = 1
     num_layers_flow: int = 4
+    num_layers_dp_flow: int = 4
     resblock_type_decoder: str = "1"
     resblock_kernel_sizes_decoder: List[int] = field(default_factory=lambda: [3, 7, 11])
     resblock_dilation_sizes_decoder: List[List[int]] = field(default_factory=lambda: [[1, 3, 5], [1, 3, 5], [1, 3, 5]])
@@ -651,21 +655,21 @@ class Vits(BaseTTS):
         self.spec_segment_size = self.args.spec_segment_size
 
         self.text_encoder = TextEncoder(
-            self.args.num_chars,
-            self.args.hidden_channels,
-            self.args.hidden_channels,
-            self.args.hidden_channels_ffn_text_encoder,
-            self.args.num_heads_text_encoder,
-            self.args.num_layers_text_encoder,
-            self.args.kernel_size_text_encoder,
-            self.args.dropout_p_text_encoder,
+            n_vocab=self.args.num_chars,
+            out_channels=self.args.hidden_channels,
+            hidden_channels=self.args.hidden_channels,
+            hidden_channels_ffn=self.args.hidden_channels_ffn_text_encoder,
+            num_heads=self.args.num_heads_text_encoder,
+            num_layers=self.args.num_layers_text_encoder,
+            kernel_size=self.args.kernel_size_text_encoder,
+            dropout_p=self.args.dropout_p_text_encoder,
             language_emb_dim=self.embedded_language_dim,
         )
 
         self.posterior_encoder = PosteriorEncoder(
-            self.args.out_channels,
-            self.args.hidden_channels,
-            self.args.hidden_channels,
+            in_channels=self.args.out_channels,
+            out_channels=self.args.hidden_channels,
+            hidden_channels=self.args.hidden_channels,
             kernel_size=self.args.kernel_size_posterior_encoder,
             dilation_rate=self.args.dilation_rate_posterior_encoder,
             num_layers=self.args.num_layers_posterior_encoder,
@@ -673,8 +677,8 @@ class Vits(BaseTTS):
         )
 
         self.flow = ResidualCouplingBlocks(
-            self.args.hidden_channels,
-            self.args.hidden_channels,
+            channels=self.args.hidden_channels,
+            hidden_channels=self.args.hidden_channels,
             kernel_size=self.args.kernel_size_flow,
             dilation_rate=self.args.dilation_rate_flow,
             num_layers=self.args.num_layers_flow,

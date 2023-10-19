@@ -37,7 +37,7 @@ PUNCTUATIONS = "".join(
 )
 
 RUN_NAME = "YTTS-ML-EL"
-EXP_ID = "v33_ML_EL"
+EXP_ID = "v35_ML_EL"
 REF_EXP_ID = "v33_ML_EL"
 
 SPK_EMBEDDING_VERSION = "v1"
@@ -170,6 +170,7 @@ audio_config = VitsAudioConfig(
 model_args = VitsArgs(
     use_sdp=True,
     spec_segment_size=64,
+    hidden_channels=256,
     d_vector_file=D_VECTOR_FILES,
     use_d_vector_file=True,
     d_vector_dim=4032,
@@ -178,7 +179,7 @@ model_args = VitsArgs(
     num_layers_text_encoder=10,
     dropout_p_text_encoder=0.3,
     dropout_p_duration_predictor=0.3,
-    num_hidden_channels_dp=512,
+    num_hidden_channels_dp=256,
     num_layers_dp_flow=32,
     num_layers_flow=32,
     num_layers_posterior_encoder=32,
