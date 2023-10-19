@@ -54,8 +54,7 @@ REF_EXPMT_PATH = os.path.join(BASE_PATH, f"expmt/ytts/{REF_EXP_ID}")
 PHN_CACHE_PATH = os.path.join(REF_EXPMT_PATH, f"phn_cache_{PHN_CACHE_VERSION}")
 SPK_EMB_CACHE_PATH = os.path.join(REF_EXPMT_PATH, f"spk_emb_{SPK_EMBEDDING_VERSION}")
 LNG_EMB_CACHE_PATH = os.path.join(REF_EXPMT_PATH, f"lng_emb_{LNG_EMBEDDING_VERSION}")
-RESTORE_PATH = os.path.join(BASE_PATH,
-                            "expmt/ytts/v31_ML_EL/YTTS-ML-EL-October-06-2023_02+07PM-452d4855/best_model.pth")
+RESTORE_PATH = os.path.join(BASE_PATH, "models/ytts/best_model_v100.pth")
 
 os.makedirs(PHN_CACHE_PATH, exist_ok=True)
 # os.makedirs(SPK_EMB_CACHE_PATH, exist_ok=True)
@@ -135,10 +134,8 @@ DATASETS_CONFIG_LIST = [
 
 ]
 
-SPEAKER_ENCODER_CHECKPOINT_PATH = os.path.join(BASE_PATH,
-                                               "expmt/se/multi/v12/run-September-28-2023_01+33PM-452d4855/checkpoint_128000.pth")
-SPEAKER_ENCODER_CONFIG_PATH = os.path.join(BASE_PATH,
-                                           "expmt/se/multi/v12/run-September-28-2023_01+33PM-452d4855/config.json")
+SPEAKER_ENCODER_CHECKPOINT_PATH = os.path.join(BASE_PATH, "models/se/spk_encoder_v12.pth")
+SPEAKER_ENCODER_CONFIG_PATH = os.path.join(BASE_PATH, "models/se/spk_encoder_config_v12.json")
 
 # D_VECTOR_FILES = [os.path.join(BASE_PATH, "expmt/ytts/v1_ML_EL/spk_emb_v1/spk_emb_el.pth")]
 D_VECTOR_FILES = []

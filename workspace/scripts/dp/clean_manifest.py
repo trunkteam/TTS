@@ -2,11 +2,11 @@ import json
 import uuid
 
 base_path = "/data/asr/workspace/audio/tts/"
-# src_man = "/data/asr/workspace/audio/tts/data/tts/en/v5/manifest/manifest_en_azure_gen_sent.json"
-# tgt_man = "/data/asr/workspace/audio/tts/data/tts/en/v5/manifest/manifest_en_azure_gen_sent_clean.json"
+src_man = "/data/asr/workspace/audio/tts/data/tts/en/v5/manifest/manifest_en_azure_gen_sent.json"
+tgt_man = "/data/asr/workspace/audio/tts/data/tts/en/v5/manifest/manifest_en_azure_gen_sent_clean.json"
 
-src_man = "/data/asr/workspace/audio/tts/data/tts/ar/manifest/v5/manifest_ar_el_cmon_diac_el_44k.json"
-tgt_man = "/data/asr/workspace/audio/tts/data/tts/ar/manifest/v5/manifest_ar_emotion_el_44k.json"
+# src_man = "/data/asr/workspace/audio/tts/data/tts/ar/manifest/v5/manifest_ar_el_cmon_diac_el_44k.json"
+# tgt_man = "/data/asr/workspace/audio/tts/data/tts/ar/manifest/v5/manifest_ar_emotion_el_44k.json"
 
 with open(tgt_man, encoding="utf-8", mode="w") as tm:
     with open(src_man, encoding="utf-8") as sm:
