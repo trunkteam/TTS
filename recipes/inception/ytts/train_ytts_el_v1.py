@@ -1,5 +1,6 @@
 import json
 import os
+
 import torch
 from trainer import Trainer, TrainerArgs
 
@@ -37,16 +38,17 @@ PUNCTUATIONS = "".join(
 )
 
 RUN_NAME = "YTTS-ML-EL"
-EXP_ID = "v35_ML_EL"
-REF_EXP_ID = "v33_ML_EL"
+EXP_ID = "v1_ML_EL"
+REF_EXP_ID = "v1_ML_EL"
 
 SPK_EMBEDDING_VERSION = "v1"
 PHN_CACHE_VERSION = "v1"
 LNG_EMBEDDING_VERSION = "v1"
-BASE_PATH = "/data/asr/workspace/audio/tts"
+BASE_PATH = "/data/asr/workspace/audio/tts2"
 DATA_PATH = "data/tts"
 DATA_PATH_SE = "data/tts/spk_enc"
 DATA_PATH_AZURE = "data/tts/en/v5/manifest"
+DATA_PATH_QU = "data/tts/ar/quran/manifest"
 EXPMT_PATH = os.path.join(BASE_PATH, f"expmt/ytts/{EXP_ID}")
 REF_EXPMT_PATH = os.path.join(BASE_PATH, f"expmt/ytts/{REF_EXP_ID}")
 PHN_CACHE_PATH = os.path.join(REF_EXPMT_PATH, f"phn_cache_{PHN_CACHE_VERSION}")
@@ -125,6 +127,11 @@ DATASETS_CONFIG_LIST = [
                 d_name="azure_en",
                 lang="en",
                 data_path=DATA_PATH_AZURE),
+    get_dataset(manifest_train="manifest_44k_20s.json",
+                manifest_eval="manifest_44k_20s_eval.json",
+                d_name="qu_ar",
+                lang="ar",
+                data_path=DATA_PATH_QU),
 
 ]
 
@@ -171,6 +178,7 @@ model_args = VitsArgs(
     use_sdp=True,
     spec_segment_size=64,
     hidden_channels=256,
+    num_hidden_channels_dp=256,
     d_vector_file=D_VECTOR_FILES,
     use_d_vector_file=True,
     d_vector_dim=4032,
@@ -179,7 +187,6 @@ model_args = VitsArgs(
     num_layers_text_encoder=10,
     dropout_p_text_encoder=0.3,
     dropout_p_duration_predictor=0.3,
-    num_hidden_channels_dp=256,
     num_layers_dp_flow=32,
     num_layers_flow=32,
     num_layers_posterior_encoder=32,
