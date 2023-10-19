@@ -1,14 +1,12 @@
 import math
-import os
-from dataclasses import dataclass, field, replace
-from itertools import chain
-from typing import Dict, List, Tuple, Union
-
 import numpy as np
+import os
 import torch
 import torch.distributed as dist
 import torchaudio
 from coqpit import Coqpit
+from dataclasses import dataclass, field, replace
+from itertools import chain
 from librosa.filters import mel as librosa_mel_fn
 from torch import nn
 from torch.cuda.amp.autocast_mode import autocast
@@ -17,6 +15,7 @@ from torch.utils.data import DataLoader
 from torch.utils.data.sampler import WeightedRandomSampler
 from trainer.torch import DistributedSampler, DistributedSamplerWrapper
 from trainer.trainer_utils import get_optimizer, get_scheduler
+from typing import Dict, List, Tuple, Union
 
 from TTS.tts.configs.shared_configs import CharactersConfig
 from TTS.tts.datasets.dataset import TTSDataset, _parse_sample
@@ -545,6 +544,7 @@ class VitsArgs(Coqpit):
     out_channels: int = 513
     spec_segment_size: int = 32
     hidden_channels: int = 192
+    num_hidden_channels_dp = 256
     hidden_channels_ffn_text_encoder: int = 768
     num_heads_text_encoder: int = 2
     num_layers_text_encoder: int = 6
@@ -629,12 +629,12 @@ class Vits(BaseTTS):
     """
 
     def __init__(
-        self,
-        config: Coqpit,
-        ap: "AudioProcessor" = None,
-        tokenizer: "TTSTokenizer" = None,
-        speaker_manager: SpeakerManager = None,
-        language_manager: LanguageManager = None,
+            self,
+            config: Coqpit,
+            ap: "AudioProcessor" = None,
+            tokenizer: "TTSTokenizer" = None,
+            speaker_manager: SpeakerManager = None,
+            language_manager: LanguageManager = None,
     ):
         super().__init__(config, ap, tokenizer, speaker_manager, language_manager)
 
@@ -683,20 +683,20 @@ class Vits(BaseTTS):
 
         if self.args.use_sdp:
             self.duration_predictor = StochasticDurationPredictor(
-                self.args.hidden_channels,
-                192,
-                3,
-                self.args.dropout_p_duration_predictor,
-                4,
+                in_channels=self.args.hidden_channels,
+                hidden_channels=self.args.num_hidden_channels_dp,
+                kernel_size=3,
+                dropout_p=self.args.dropout_p_duration_predictor,
+                num_flows=self.args.num_layers_dp_flow,
                 cond_channels=self.embedded_speaker_dim if self.args.condition_dp_on_speaker else 0,
                 language_emb_dim=self.embedded_language_dim,
             )
         else:
             self.duration_predictor = DurationPredictor(
-                self.args.hidden_channels,
-                256,
-                3,
-                self.args.dropout_p_duration_predictor,
+                in_channels=self.args.hidden_channels,
+                hidden_channels=self.args.num_hidden_channels_dp,
+                kernel_size=3,
+                dropout_p=self.args.dropout_p_duration_predictor,
                 cond_channels=self.embedded_speaker_dim,
                 language_emb_dim=self.embedded_language_dim,
             )
@@ -753,7 +753,7 @@ class Vits(BaseTTS):
         # TODO: make this a function
         if self.args.use_speaker_encoder_as_loss:
             if self.speaker_manager.encoder is None and (
-                not self.args.speaker_encoder_model_path or not self.args.speaker_encoder_config_path
+                    not self.args.speaker_encoder_model_path or not self.args.speaker_encoder_config_path
             ):
                 raise RuntimeError(
                     " [!] To use the speaker consistency loss (SCL) you need to specify speaker_encoder_model_path and speaker_encoder_config_path !!"
@@ -763,8 +763,8 @@ class Vits(BaseTTS):
             print(" > External Speaker Encoder Loaded !!")
 
             if (
-                hasattr(self.speaker_manager.encoder, "audio_config")
-                and self.config.audio.sample_rate != self.speaker_manager.encoder.audio_config["sample_rate"]
+                    hasattr(self.speaker_manager.encoder, "audio_config")
+                    and self.config.audio.sample_rate != self.speaker_manager.encoder.audio_config["sample_rate"]
             ):
                 self.audio_transform = torchaudio.transforms.Resample(
                     orig_freq=self.config.audio.sample_rate,
@@ -912,9 +912,9 @@ class Vits(BaseTTS):
         with torch.no_grad():
             o_scale = torch.exp(-2 * logs_p)
             logp1 = torch.sum(-0.5 * math.log(2 * math.pi) - logs_p, [1]).unsqueeze(-1)  # [b, t, 1]
-            logp2 = torch.einsum("klm, kln -> kmn", [o_scale, -0.5 * (z_p**2)])
+            logp2 = torch.einsum("klm, kln -> kmn", [o_scale, -0.5 * (z_p ** 2)])
             logp3 = torch.einsum("klm, kln -> kmn", [m_p * o_scale, z_p])
-            logp4 = torch.sum(-0.5 * (m_p**2) * o_scale, [1]).unsqueeze(-1)  # [b, t, 1]
+            logp4 = torch.sum(-0.5 * (m_p ** 2) * o_scale, [1]).unsqueeze(-1)  # [b, t, 1]
             logp = logp2 + logp3 + logp1 + logp4
             attn = maximum_path(logp, attn_mask.squeeze(1)).unsqueeze(1).detach()  # [b, 1, t, t']
 
@@ -959,13 +959,13 @@ class Vits(BaseTTS):
         return z, spec_segment_size, slice_ids, y_mask
 
     def forward(  # pylint: disable=dangerous-default-value
-        self,
-        x: torch.tensor,
-        x_lengths: torch.tensor,
-        y: torch.tensor,
-        y_lengths: torch.tensor,
-        waveform: torch.tensor,
-        aux_input={"d_vectors": None, "speaker_ids": None, "language_ids": None},
+            self,
+            x: torch.tensor,
+            x_lengths: torch.tensor,
+            y: torch.tensor,
+            y_lengths: torch.tensor,
+            waveform: torch.tensor,
+            aux_input={"d_vectors": None, "speaker_ids": None, "language_ids": None},
     ) -> Dict:
         """Forward pass of the model.
 
@@ -1087,9 +1087,10 @@ class Vits(BaseTTS):
 
     @torch.no_grad()
     def inference(
-        self,
-        x,
-        aux_input={"x_lengths": None, "d_vectors": None, "speaker_ids": None, "language_ids": None, "durations": None},
+            self,
+            x,
+            aux_input={"x_lengths": None, "d_vectors": None, "speaker_ids": None, "language_ids": None,
+                       "durations": None},
     ):  # pylint: disable=dangerous-default-value
         """
         Note:
@@ -1174,7 +1175,7 @@ class Vits(BaseTTS):
 
     @torch.no_grad()
     def inference_voice_conversion(
-        self, reference_wav, speaker_id=None, d_vector=None, reference_speaker_id=None, reference_d_vector=None
+            self, reference_wav, speaker_id=None, d_vector=None, reference_speaker_id=None, reference_d_vector=None
     ):
         """Inference for voice conversion
 
@@ -1348,7 +1349,7 @@ class Vits(BaseTTS):
         return figures, audios
 
     def train_log(
-        self, batch: dict, outputs: dict, logger: "Logger", assets: dict, steps: int
+            self, batch: dict, outputs: dict, logger: "Logger", assets: dict, steps: int
     ):  # pylint: disable=no-self-use
         """Create visualizations and waveform examples.
 
@@ -1456,7 +1457,7 @@ class Vits(BaseTTS):
         return {"figures": test_figures, "audios": test_audios}
 
     def test_log(
-        self, outputs: dict, logger: "Logger", assets: dict, steps: int  # pylint: disable=unused-argument
+            self, outputs: dict, logger: "Logger", assets: dict, steps: int  # pylint: disable=unused-argument
     ) -> None:
         logger.test_audios(steps, outputs["audios"], self.ap.sample_rate)
         logger.test_figures(steps, outputs["figures"])
@@ -1582,14 +1583,14 @@ class Vits(BaseTTS):
         return batch_sampler
 
     def get_data_loader(
-        self,
-        config: Coqpit,
-        assets: Dict,
-        is_eval: bool,
-        samples: Union[List[Dict], List[List]],
-        verbose: bool,
-        num_gpus: int,
-        rank: int = None,
+            self,
+            config: Coqpit,
+            assets: Dict,
+            is_eval: bool,
+            samples: Union[List[Dict], List[List]],
+            verbose: bool,
+            num_gpus: int,
+            rank: int = None,
     ) -> "DataLoader":
         if is_eval and not config.run_eval:
             loader = None
@@ -1696,7 +1697,7 @@ class Vits(BaseTTS):
         return [VitsDiscriminatorLoss(self.config), VitsGeneratorLoss(self.config)]
 
     def load_checkpoint(
-        self, config, checkpoint_path, eval=False, strict=True, cache=False
+            self, config, checkpoint_path, eval=False, strict=True, cache=False
     ):  # pylint: disable=unused-argument, redefined-builtin
         """Load the model checkpoint and setup for training or inference"""
         state = load_fsspec(checkpoint_path, map_location=torch.device("cpu"), cache=cache)
@@ -1725,7 +1726,7 @@ class Vits(BaseTTS):
             assert not self.training
 
     def load_fairseq_checkpoint(
-        self, config, checkpoint_dir, eval=False, strict=True
+            self, config, checkpoint_dir, eval=False, strict=True
     ):  # pylint: disable=unused-argument, redefined-builtin
         """Load VITS checkpoints released by fairseq here: https://github.com/facebookresearch/fairseq/tree/main/examples/mms
         Performs some changes for compatibility.
@@ -1783,13 +1784,13 @@ class Vits(BaseTTS):
 
         if not config.model_args.encoder_sample_rate:
             assert (
-                upsample_rate == config.audio.hop_length
+                    upsample_rate == config.audio.hop_length
             ), f" [!] Product of upsample rates must be equal to the hop length - {upsample_rate} vs {config.audio.hop_length}"
         else:
             encoder_to_vocoder_upsampling_factor = config.audio.sample_rate / config.model_args.encoder_sample_rate
             effective_hop_length = config.audio.hop_length * encoder_to_vocoder_upsampling_factor
             assert (
-                upsample_rate == effective_hop_length
+                    upsample_rate == effective_hop_length
             ), f" [!] Product of upsample rates must be equal to the hop length - {upsample_rate} vs {effective_hop_length}"
 
         ap = AudioProcessor.init_from_config(config, verbose=verbose)
@@ -1935,11 +1936,11 @@ class VitsCharacters(BaseCharacters):
     """Characters class for VITs model for compatibility with pre-trained models"""
 
     def __init__(
-        self,
-        graphemes: str = _characters,
-        punctuations: str = _punctuations,
-        pad: str = _pad,
-        ipa_characters: str = _phonemes,
+            self,
+            graphemes: str = _characters,
+            punctuations: str = _punctuations,
+            pad: str = _pad,
+            ipa_characters: str = _phonemes,
     ) -> None:
         if ipa_characters is not None:
             graphemes += ipa_characters
