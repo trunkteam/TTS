@@ -1,12 +1,12 @@
 import os
+import pandas as pd
 import re
 import xml.etree.ElementTree as ET
 from glob import glob
 from pathlib import Path
+from tqdm import tqdm
 from typing import List
 
-import pandas as pd
-from tqdm import tqdm
 
 ########################
 # DATASETS
@@ -292,7 +292,7 @@ def nancy(root_path, meta_file, **kwargs):  # pylint: disable=unused-argument
     with open(txt_file, "r", encoding="utf-8") as ttf:
         for line in ttf:
             utt_id = line.split()[1]
-            text = line[line.find('"') + 1 : line.rfind('"') - 1]
+            text = line[line.find('"') + 1: line.rfind('"') - 1]
             wav_file = os.path.join(root_path, "wavn", utt_id + ".wav")
             items.append({"text": text, "audio_file": wav_file, "speaker_name": speaker_name})
     return items
@@ -418,7 +418,7 @@ def vctk(root_path, meta_files=None, wavs_path="wav48_silence_trimmed", mic="mic
     """
     file_ext = "flac"
     items = []
-    meta_files = glob(f"{os.path.join(root_path,'txt')}/**/*.txt", recursive=True)
+    meta_files = glob(f"{os.path.join(root_path, 'txt')}/**/*.txt", recursive=True)
     for meta_file in meta_files:
         _, speaker_id, txt_file = os.path.relpath(meta_file, root_path).split(os.sep)
         file_id = txt_file.split(".")[0]
@@ -445,7 +445,7 @@ def vctk(root_path, meta_files=None, wavs_path="wav48_silence_trimmed", mic="mic
 def vctk_old(root_path, meta_files=None, wavs_path="wav48", ignored_speakers=None):
     """homepages.inf.ed.ac.uk/jyamagis/release/VCTK-Corpus.tar.gz"""
     items = []
-    meta_files = glob(f"{os.path.join(root_path,'txt')}/**/*.txt", recursive=True)
+    meta_files = glob(f"{os.path.join(root_path, 'txt')}/**/*.txt", recursive=True)
     for meta_file in meta_files:
         _, speaker_id, txt_file = os.path.relpath(meta_file, root_path).split(os.sep)
         file_id = txt_file.split(".")[0]
@@ -554,9 +554,9 @@ def _voxcel_x(root_path, meta_file, voxcel_idx):
         meta_data = []
         wav_files = voxceleb_path.rglob("**/*.wav")
         for path in tqdm(
-            wav_files,
-            desc=f"Building VoxCeleb {voxcel_idx} Meta file ... this needs to be done only once.",
-            total=expected_count,
+                wav_files,
+                desc=f"Building VoxCeleb {voxcel_idx} Meta file ... this needs to be done only once.",
+                total=expected_count,
         ):
             speaker_id = str(Path(path).parent.parent.stem)
             assert speaker_id.startswith("id")
@@ -652,4 +652,83 @@ def bel_tts_formatter(root_path, meta_file, **kwargs):  # pylint: disable=unused
             wav_file = os.path.join(root_path, cols[0])
             text = cols[1]
             items.append({"text": text, "audio_file": wav_file, "speaker_name": speaker_name, "root_path": root_path})
+    return items
+
+
+def iiai_se(root_path, meta_file, ignored_speakers=None):
+    items = []
+    manifest_path = os.path.join(root_path, meta_file)
+    with open(manifest_path) as src_m:
+        for line in src_m:
+            try:
+                jd = json.loads(line.strip("\n").strip())
+                wav_file = str(jd["audio_filepath"]).replace(root_path + "/", "")
+                wav_file = os.path.join(root_path, wav_file).replace("//", "/")
+                text = ""
+                speaker_name = jd["speaker"]
+                u_fid = jd["u_fid"]
+
+                if ignored_speakers and isinstance(ignored_speakers, list):
+                    if speaker_name in ignored_speakers:
+                        print(f"Discarded: {wav_file}, speaker_name: {speaker_name}")
+                        continue
+
+                if "duration" not in jd:
+                    print(f"Discarded: {wav_file}, u_fid: {u_fid}")
+                    continue
+
+                duration = float(jd["duration"])
+                if duration > 2.0:
+                    items.append(
+                        {"text": text,
+                         "audio_file": wav_file,
+                         "speaker_name": speaker_name,
+                         "root_path": root_path,
+                         "u_fid": u_fid
+                         }
+                    )
+                else:
+                    print(f"Discarded: {wav_file}, duration: {duration}")
+                    continue
+            except Exception as e:
+                print(e)
+
+    return items
+
+
+def iiai_tts(root_path, meta_file, ignored_speakers=None):
+    print(f"ignored_speakers: {ignored_speakers}")
+    items = []
+    manifest_path = os.path.join(root_path, meta_file)
+    with open(manifest_path) as src_m:
+        for line in src_m:
+            try:
+                jd = json.loads(line.strip("\n").strip())
+                wav_file = os.path.join(root_path, jd["audio_filepath"])
+                text = str(jd["text"]).strip()
+                speaker_name = jd["speaker"]
+                u_fid = jd["u_fid"]
+                if ignored_speakers and isinstance(ignored_speakers, list):
+                    if speaker_name in ignored_speakers:
+                        print(f"Ignoring: {speaker_name}")
+                        continue
+
+                if "emotion" in jd:
+                    emotion = jd["emotion"]
+                    items.append({"text": text,
+                                  "audio_file": wav_file,
+                                  "speaker_name": speaker_name,
+                                  "root_path": root_path,
+                                  "emotion": emotion,
+                                  "u_fid": u_fid})
+                else:
+                    items.append({"text": text,
+                                  "audio_file": wav_file,
+                                  "speaker_name": speaker_name,
+                                  "root_path": root_path,
+                                  "u_fid": u_fid})
+
+            except Exception as e:
+                print(e)
+
     return items
