@@ -718,7 +718,7 @@ def iiai_tts(root_path, meta_file, ignored_speakers=None):
                 if "duration" in jd:
                     duration = jd["duration"]
                 else:
-                    audio_meta = torchaudio.info(jd["audio_file"])
+                    audio_meta = torchaudio.info(wav_file)
                     duration = audio_meta.num_frames / audio_meta.sample_rate
 
                 if "emotion" in jd:
