@@ -379,7 +379,7 @@ class VitsArgs(Coqpit):
         hidden_channels (int):
             Number of hidden channels of the model. Defaults to 192.
             
-        num_hidden_channels_dp (int):
+        dp_hidden_channels (int):
             Number of hidden channels of the duration predictor. Defaults to 256.
 
         hidden_channels_ffn_text_encoder (int):
@@ -547,7 +547,7 @@ class VitsArgs(Coqpit):
     out_channels: int = 513
     spec_segment_size: int = 32
     hidden_channels: int = 192
-    num_hidden_channels_dp = 256
+    dp_hidden_channels: int = 256
     hidden_channels_ffn_text_encoder: int = 768
     num_heads_text_encoder: int = 2
     num_layers_text_encoder: int = 6
@@ -688,7 +688,7 @@ class Vits(BaseTTS):
         if self.args.use_sdp:
             self.duration_predictor = StochasticDurationPredictor(
                 in_channels=self.args.hidden_channels,
-                hidden_channels=self.args.num_hidden_channels_dp,
+                hidden_channels=self.args.dp_hidden_channels,
                 kernel_size=3,
                 dropout_p=self.args.dropout_p_duration_predictor,
                 num_flows=self.args.num_layers_dp_flow,
@@ -698,7 +698,7 @@ class Vits(BaseTTS):
         else:
             self.duration_predictor = DurationPredictor(
                 in_channels=self.args.hidden_channels,
-                hidden_channels=self.args.num_hidden_channels_dp,
+                hidden_channels=self.args.dp_hidden_channels,
                 kernel_size=3,
                 dropout_p=self.args.dropout_p_duration_predictor,
                 cond_channels=self.embedded_speaker_dim,
