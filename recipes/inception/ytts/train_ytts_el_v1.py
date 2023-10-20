@@ -45,10 +45,8 @@ SPK_EMBEDDING_VERSION = "v1"
 PHN_CACHE_VERSION = "v1"
 LNG_EMBEDDING_VERSION = "v1"
 BASE_PATH = "/data/asr/workspace/audio/tts2"
-DATA_PATH = "data/tts"
-DATA_PATH_SE = "data/tts/spk_enc"
-DATA_PATH_AZURE = "data/tts/en/v5/manifest"
-DATA_PATH_QU = "data/tts/ar/quran/manifest"
+DATA_PATH_AR = "data/tts2/manifest/ar"
+DATA_PATH_EN = "data/tts2/manifest/en"
 EXPMT_PATH = os.path.join(BASE_PATH, f"expmt/ytts/{EXP_ID}")
 REF_EXPMT_PATH = os.path.join(BASE_PATH, f"expmt/ytts/{REF_EXP_ID}")
 PHN_CACHE_PATH = os.path.join(REF_EXPMT_PATH, f"phn_cache_{PHN_CACHE_VERSION}")
@@ -79,7 +77,7 @@ NUM_RESAMPLE_THREADS = 10
 
 
 def get_dataset(manifest_train: str, manifest_eval: str, d_name: str, lang: str = "ar", base_path=BASE_PATH,
-                data_path=DATA_PATH):
+                data_path=DATA_PATH_AR):
     return BaseDatasetConfig(
         formatter="iiai_tts",
         dataset_name=f"{lang}_{d_name}",
@@ -91,46 +89,46 @@ def get_dataset(manifest_train: str, manifest_eval: str, d_name: str, lang: str 
 
 
 DATASETS_CONFIG_LIST = [
+    get_dataset(manifest_train="manifest_44k_20s.json",
+                manifest_eval="manifest_44k_20s_eval.json",
+                d_name="ar_qu_v1",
+                lang="ar"),
     get_dataset(manifest_train="ar/manifest/v2/manifest_ar_emotion_el_44k.json",
                 manifest_eval="ar/manifest/v2/manifest_ar_emotion_el_44k_eval.json",
-                d_name="el_ar_v2",
+                d_name="ar_el_gen_v2",
                 lang="ar"),
     get_dataset(manifest_train="ar/manifest/v3/manifest_ar_emotion_el_44k.json",
                 manifest_eval="ar/manifest/v3/manifest_ar_emotion_el_44k_eval.json",
-                d_name="el_ar_v3",
+                d_name="ar_el_gen_v3",
                 lang="ar"),
     get_dataset(manifest_train="ar/manifest/v5/manifest_ar_emotion_el_44k.json",
                 manifest_eval="ar/manifest/v5/manifest_ar_emotion_el_44k_eval.json",
-                d_name="el_ar_v5",
+                d_name="ar_el_gen_v5",
+                lang="ar"),
+    get_dataset(manifest_train="manifest_multi_lang_se_ar_8_44k_clean.json",
+                manifest_eval="manifest_multi_lang_se_ar_8_44k_clean_eval.json",
+                d_name="ar_se_v1",
                 lang="ar"),
     get_dataset(manifest_train="en/manifest/v2/manifest_en_emotion_el_44k.json",
                 manifest_eval="en/manifest/v2/manifest_en_emotion_el_44k_eval.json",
-                d_name="el_en_v2",
-                lang="en"),
+                d_name="en_el_gen_v2",
+                lang="en",
+                data_path=DATA_PATH_EN),
     get_dataset(manifest_train="en/manifest/v3/manifest_en_emotion_v3_el_44k.json",
                 manifest_eval="en/manifest/v3/manifest_en_emotion_v3_el_44k_eval.json",
-                d_name="el_en_v3",
-                lang="en"),
-    get_dataset(manifest_train="manifest_multi_lang_se_ar_8_44k_clean.json",
-                manifest_eval="manifest_multi_lang_se_ar_8_44k_clean_eval.json",
-                d_name="se_arb",
-                lang="ar",
-                data_path=DATA_PATH_SE),
+                d_name="en_el_gen_v3",
+                lang="en",
+                data_path=DATA_PATH_EN),
     get_dataset(manifest_train="manifest_multi_lang_se_en_8_44k_clean.json",
                 manifest_eval="manifest_multi_lang_se_en_8_44k_clean_eval.json",
-                d_name="se_eng",
+                d_name="en_se_v1",
                 lang="en",
-                data_path=DATA_PATH_SE),
+                data_path=DATA_PATH_EN),
     get_dataset(manifest_train="manifest_en_azure_gen_sent_clean.json",
                 manifest_eval="manifest_en_azure_gen_sent_clean_eval.json",
-                d_name="azure_en",
+                d_name="en_az_gen_v1",
                 lang="en",
-                data_path=DATA_PATH_AZURE),
-    get_dataset(manifest_train="manifest_44k_20s.json",
-                manifest_eval="manifest_44k_20s_eval.json",
-                d_name="qu_ar",
-                lang="ar",
-                data_path=DATA_PATH_QU),
+                data_path=DATA_PATH_EN),
 
 ]
 

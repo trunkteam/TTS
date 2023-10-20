@@ -6,6 +6,7 @@ from typing import Dict, List, Union
 
 import numpy as np
 import torch
+import torchaudio
 import tqdm
 from torch.utils.data import Dataset
 
@@ -176,7 +177,9 @@ class TTSDataset(Dataset):
         lens = []
         for item in self.samples:
             _, wav_file, *_ = _parse_sample(item)
-            audio_len = os.path.getsize(wav_file) / 16 * 8  # assuming 16bit audio
+            audio_meta = torchaudio.info(wav_file)
+            audio_len = audio_meta.num_frames / audio_meta.sample_rate
+            # audio_len = os.path.getsize(wav_file) / 16 * 8  # assuming 16bit audio
             lens.append(audio_len)
         return lens
 
@@ -295,10 +298,12 @@ class TTSDataset(Dataset):
     def _compute_lengths(samples):
         new_samples = []
         for item in samples:
-            audio_length = os.path.getsize(item["audio_file"]) / 16 * 8  # assuming 16bit audio
-            text_lenght = len(item["text"])
+            audio_meta = torchaudio.info(item["audio_file"])
+            audio_length = audio_meta.num_frames / audio_meta.sample_rate
+            # audio_length = os.path.getsize(item["audio_file"]) / 16 * 8  # assuming 16bit audio
+            text_length = len(item["text"])
             item["audio_length"] = audio_length
-            item["text_length"] = text_lenght
+            item["text_length"] = text_length
             new_samples += [item]
         return new_samples
 
@@ -387,6 +392,8 @@ class TTSDataset(Dataset):
             print(" | > Max audio length: {}".format(np.max(audio_lengths)))
             print(" | > Min audio length: {}".format(np.min(audio_lengths)))
             print(" | > Avg audio length: {}".format(np.mean(audio_lengths)))
+            print(f" | > Num. instances discarded text samples: {len(text_ignore_idx)}")
+            print(f" | > Num. instances discarded audio samples: {len(audio_ignore_idx)}")
             print(f" | > Num. instances discarded samples: {len(ignore_idx)}")
             print(" | > Batch group size: {}.".format(self.batch_group_size))
 
