@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import List
 
 import pandas as pd
+import torchaudio
 from tqdm import tqdm
 
 
@@ -714,6 +715,11 @@ def iiai_tts(root_path, meta_file, ignored_speakers=None):
                     if speaker_name in ignored_speakers:
                         print(f"Ignoring: {speaker_name}")
                         continue
+                if "duration" in jd:
+                    duration = jd["duration"]
+                else:
+                    audio_meta = torchaudio.info(jd["audio_file"])
+                    duration = audio_meta.num_frames / audio_meta.sample_rate
 
                 if "emotion" in jd:
                     emotion = jd["emotion"]
@@ -722,12 +728,14 @@ def iiai_tts(root_path, meta_file, ignored_speakers=None):
                                   "speaker_name": speaker_name,
                                   "root_path": root_path,
                                   "emotion": emotion,
+                                  "duration": duration,
                                   "u_fid": u_fid})
                 else:
                     items.append({"text": text,
                                   "audio_file": wav_file,
                                   "speaker_name": speaker_name,
                                   "root_path": root_path,
+                                  "duration": duration,
                                   "u_fid": u_fid})
 
             except Exception as e:
