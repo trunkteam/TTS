@@ -168,4 +168,5 @@ def multilingual_cleaners(text):
 def no_cleaners(text):
     # remove newline characters
     text = text.replace("\n", "")
+    text = collapse_whitespace(text)
     return text
