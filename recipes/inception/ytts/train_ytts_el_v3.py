@@ -38,7 +38,7 @@ PUNCTUATIONS = "".join(
 )
 
 RUN_NAME = "YTTS-ML-EL"
-EXP_ID = "v1_ML_EL"
+EXP_ID = "v3_ML_EL"
 REF_EXP_ID = "v1_ML_EL"
 
 SPK_EMBEDDING_VERSION = "v1"
@@ -209,7 +209,7 @@ config = VitsConfig(
     batch_size=BATCH_SIZE,
     batch_group_size=48,
     eval_batch_size=EVAL_BATCH_SIZE,
-    num_loader_workers=16,
+    num_loader_workers=32,
     print_step=100,
     plot_step=100,
     log_model_step=100,
@@ -336,8 +336,11 @@ model = Vits.init_from_config(config)
 
 # Init the trainer and 🚀
 trainer = Trainer(
-    TrainerArgs(restore_path=RESTORE_PATH if RESTORE_PATH else "", skip_train_epoch=SKIP_TRAIN_EPOCH,
-                grad_accum_steps=8, ),
+    TrainerArgs(
+        restore_path=RESTORE_PATH if RESTORE_PATH else "",
+        skip_train_epoch=SKIP_TRAIN_EPOCH,
+        grad_accum_steps=1,
+    ),
     config,
     output_path=EXPMT_PATH,
     model=model,
