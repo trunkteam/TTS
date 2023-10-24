@@ -8,7 +8,7 @@ RUN python3 -m pip install llvmlite pyannote.audio elevenlabs stable-ts nemo-tex
 
 WORKDIR /root
 COPY . /root
-RUN pip3 install torch torchaudio
+RUN python3 -m pip install torch torchaudio
 RUN rm -rf /root/.cache/pip
 RUN make install
 ENTRYPOINT ["tts"]
