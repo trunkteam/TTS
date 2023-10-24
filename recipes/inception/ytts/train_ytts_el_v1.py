@@ -45,8 +45,9 @@ SPK_EMBEDDING_VERSION = "v1"
 PHN_CACHE_VERSION = "v1"
 LNG_EMBEDDING_VERSION = "v1"
 BASE_PATH = "/data/asr/workspace/audio/tts2"
-DATA_PATH_AR = "data/tts2/manifest/ar"
-DATA_PATH_EN = "data/tts2/manifest/en"
+BASE_PATH_DATA = "/data/asr/workspace/audio/tts"
+DATA_PATH_AR = "data/tts/manifest/ar"
+DATA_PATH_EN = "data/tts/manifest/en"
 EXPMT_PATH = os.path.join(BASE_PATH, f"expmt/ytts/{EXP_ID}")
 REF_EXPMT_PATH = os.path.join(BASE_PATH, f"expmt/ytts/{REF_EXP_ID}")
 PHN_CACHE_PATH = os.path.join(REF_EXPMT_PATH, f"phn_cache_{PHN_CACHE_VERSION}")
@@ -68,15 +69,15 @@ with open(LNG_EMB_FILE, mode="w") as lef:
     json.dump(LNG_EMB, lef)
 
 SKIP_TRAIN_EPOCH = False
-BATCH_SIZE = 32
+BATCH_SIZE = 16
 EVAL_BATCH_SIZE = 32
 SAMPLE_RATE = 44100
-MAX_AUDIO_LEN_IN_SECONDS = 18
+MAX_AUDIO_LEN_IN_SECONDS = 21
 MIN_AUDIO_LEN_IN_SECONDS = 0
 NUM_RESAMPLE_THREADS = 10
 
 
-def get_dataset(manifest_train: str, manifest_eval: str, d_name: str, lang: str = "ar", base_path=BASE_PATH,
+def get_dataset(manifest_train: str, manifest_eval: str, d_name: str, lang: str = "ar", base_path=BASE_PATH_DATA,
                 data_path=DATA_PATH_AR):
     data_path = os.path.join(data_path, d_name)
     return BaseDatasetConfig(
@@ -209,7 +210,7 @@ config = VitsConfig(
     batch_size=BATCH_SIZE,
     batch_group_size=48,
     eval_batch_size=EVAL_BATCH_SIZE,
-    num_loader_workers=16,
+    num_loader_workers=12,
     print_step=100,
     plot_step=100,
     log_model_step=100,
@@ -336,8 +337,11 @@ model = Vits.init_from_config(config)
 
 # Init the trainer and 🚀
 trainer = Trainer(
-    TrainerArgs(restore_path=RESTORE_PATH if RESTORE_PATH else "", skip_train_epoch=SKIP_TRAIN_EPOCH,
-                grad_accum_steps=8, ),
+    TrainerArgs(
+        restore_path=RESTORE_PATH if RESTORE_PATH else "",
+        skip_train_epoch=SKIP_TRAIN_EPOCH,
+        grad_accum_steps=256,
+    ),
     config,
     output_path=EXPMT_PATH,
     model=model,
