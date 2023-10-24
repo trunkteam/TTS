@@ -45,6 +45,7 @@ SPK_EMBEDDING_VERSION = "v1"
 PHN_CACHE_VERSION = "v1"
 LNG_EMBEDDING_VERSION = "v1"
 BASE_PATH = "/data/asr/workspace/audio/tts2"
+BASE_PATH_DATA = "/data/asr/workspace/audio/tts"
 DATA_PATH_AR = "data/tts2/manifest/ar"
 DATA_PATH_EN = "data/tts2/manifest/en"
 EXPMT_PATH = os.path.join(BASE_PATH, f"expmt/ytts/{EXP_ID}")
@@ -52,7 +53,7 @@ REF_EXPMT_PATH = os.path.join(BASE_PATH, f"expmt/ytts/{REF_EXP_ID}")
 PHN_CACHE_PATH = os.path.join(REF_EXPMT_PATH, f"phn_cache_{PHN_CACHE_VERSION}")
 SPK_EMB_CACHE_PATH = os.path.join(REF_EXPMT_PATH, f"spk_emb_{SPK_EMBEDDING_VERSION}")
 LNG_EMB_CACHE_PATH = os.path.join(REF_EXPMT_PATH, f"lng_emb_{LNG_EMBEDDING_VERSION}")
-RESTORE_PATH = os.path.join(BASE_PATH, "models/ytts/v1_half_ckpt.pth")
+RESTORE_PATH = os.path.join(BASE_PATH, "models/ytts/v3_half_ckpt.pth")
 
 os.makedirs(PHN_CACHE_PATH, exist_ok=True)
 # os.makedirs(SPK_EMB_CACHE_PATH, exist_ok=True)
@@ -76,7 +77,7 @@ MIN_AUDIO_LEN_IN_SECONDS = 0
 NUM_RESAMPLE_THREADS = 10
 
 
-def get_dataset(manifest_train: str, manifest_eval: str, d_name: str, lang: str = "ar", base_path=BASE_PATH,
+def get_dataset(manifest_train: str, manifest_eval: str, d_name: str, lang: str = "ar", base_path=BASE_PATH_DATA,
                 data_path=DATA_PATH_AR):
     data_path = os.path.join(data_path, d_name)
     return BaseDatasetConfig(
