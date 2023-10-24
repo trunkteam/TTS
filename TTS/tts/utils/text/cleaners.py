@@ -14,7 +14,7 @@ from .french.abbreviations import abbreviations_fr
 # Regular expression matching whitespace:
 _whitespace_re = re.compile(r"\s+")
 
-gen_replaces = ["\u202b"]
+blank_replaces = ["\u202b"]
 
 
 def expand_abbreviations(text, lang="en"):
@@ -175,8 +175,10 @@ def no_cleaners(text):
 
 def gen_cleaners(text):
     text = no_cleaners(text)
-    for ch in gen_replaces:
+    for ch in blank_replaces:
         text = text.replace(ch, "")
+        
+    text = text.replace("_", "-")
 
     text = no_cleaners(text)
 
