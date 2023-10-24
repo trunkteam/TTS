@@ -23,8 +23,9 @@ def _parse_sample(item):
     language_name = None
     attn_file = None
     emotion_name = None
+    duration = None
     
-    print(item)
+    # print(item)
     if len(item) == 7:
         text, wav_file, speaker_name, language_name, emotion_name, duration, attn_file = item
     elif len(item) == 6:
@@ -37,7 +38,7 @@ def _parse_sample(item):
         text, wav_file, speaker_name = item
     else:
         raise ValueError(" [!] Dataset cannot parse the sample.")
-    return text, wav_file, speaker_name, language_name, emotion_name, attn_file
+    return text, wav_file, speaker_name, language_name, emotion_name, duration, attn_file
 
 
 def noise_augment_audio(wav):
@@ -305,7 +306,7 @@ class TTSDataset(Dataset):
     def _compute_lengths(samples):
         new_samples = []
         for item in samples:
-            print(f"Item: {item}")
+            # print(f"Item: {item}")
             if "duration" in item:
                 audio_length = float(str(item["duration"]))
             else:
