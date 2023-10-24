@@ -22,15 +22,22 @@ torch.multiprocessing.set_sharing_strategy("file_system")
 def _parse_sample(item):
     language_name = None
     attn_file = None
-    if len(item) == 5:
-        text, wav_file, speaker_name, language_name, attn_file = item
+    emotion_name = None
+    
+    print(item)
+    if len(item) == 7:
+        text, wav_file, speaker_name, language_name, emotion_name, duration, attn_file = item
+    elif len(item) == 6:
+        text, wav_file, speaker_name, language_name, emotion_name, attn_file = item
+    elif len(item) == 5:
+        text, wav_file, speaker_name, language_name, emotion_name = item
     elif len(item) == 4:
         text, wav_file, speaker_name, language_name = item
     elif len(item) == 3:
         text, wav_file, speaker_name = item
     else:
         raise ValueError(" [!] Dataset cannot parse the sample.")
-    return text, wav_file, speaker_name, language_name, attn_file
+    return text, wav_file, speaker_name, language_name, emotion_name, attn_file
 
 
 def noise_augment_audio(wav):
@@ -176,9 +183,9 @@ class TTSDataset(Dataset):
     def lengths(self):
         lens = []
         for item in self.samples:
-            _, wav_file, *_ = _parse_sample(item)
-            audio_meta = torchaudio.info(wav_file)
-            audio_len = audio_meta.num_frames / audio_meta.sample_rate
+            _, wav_file, *_, audio_len = _parse_sample(item)
+            # audio_meta = torchaudio.info(wav_file)
+            # audio_len = audio_meta.num_frames / audio_meta.sample_rate
             # audio_len = os.path.getsize(wav_file) / 16 * 8  # assuming 16bit audio
             lens.append(audio_len)
         return lens
