@@ -6,7 +6,6 @@ import re
 from anyascii import anyascii
 
 from TTS.tts.utils.text.chinese_mandarin.numbers import replace_numbers_to_characters_in_text
-
 from .english.abbreviations import abbreviations_en
 from .english.number_norm import normalize_numbers as en_normalize_numbers
 from .english.time_norm import expand_time_english
@@ -14,6 +13,8 @@ from .french.abbreviations import abbreviations_fr
 
 # Regular expression matching whitespace:
 _whitespace_re = re.compile(r"\s+")
+
+gen_replaces = ["\u202b"]
 
 
 def expand_abbreviations(text, lang="en"):
@@ -169,4 +170,12 @@ def no_cleaners(text):
     # remove newline characters
     text = text.replace("\n", "")
     text = collapse_whitespace(text)
+    return text
+
+
+def gen_cleaners(text):
+    text = no_cleaners(text)
+    for ch in gen_replaces:
+        text = text.replace(ch, "")
+
     return text
