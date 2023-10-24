@@ -178,4 +178,6 @@ def gen_cleaners(text):
     for ch in gen_replaces:
         text = text.replace(ch, "")
 
+    text = no_cleaners(text)
+
     return text
