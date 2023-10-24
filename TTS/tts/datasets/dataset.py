@@ -183,9 +183,9 @@ class TTSDataset(Dataset):
     def lengths(self):
         lens = []
         for item in self.samples:
-            _, wav_file, *_, audio_len = _parse_sample(item)
-            # audio_meta = torchaudio.info(wav_file)
-            # audio_len = audio_meta.num_frames / audio_meta.sample_rate
+            _, wav_file, *_ = _parse_sample(item)
+            audio_meta = torchaudio.info(wav_file)
+            audio_len = audio_meta.num_frames / audio_meta.sample_rate
             # audio_len = os.path.getsize(wav_file) / 16 * 8  # assuming 16bit audio
             lens.append(audio_len)
         return lens
@@ -305,6 +305,7 @@ class TTSDataset(Dataset):
     def _compute_lengths(samples):
         new_samples = []
         for item in samples:
+            print(f"Item: {item}")
             if "duration" in item:
                 audio_length = float(str(item["duration"]))
             else:
