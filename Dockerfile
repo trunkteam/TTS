@@ -1,4 +1,4 @@
-ARG BASE=nvidia/cuda:12.2.0-base-ubuntu22.04
+ARG BASE=nvcr.io/nvidia/cuda:11.8.0-base-ubuntu22.04
 ARG DEBIAN_FRONTEND=noninteractive
 FROM ${BASE}
 RUN apt-get update && apt-get upgrade -y
