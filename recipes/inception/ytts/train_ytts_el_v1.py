@@ -69,8 +69,8 @@ with open(LNG_EMB_FILE, mode="w") as lef:
     json.dump(LNG_EMB, lef)
 
 SKIP_TRAIN_EPOCH = False
-BATCH_SIZE = 16
-EVAL_BATCH_SIZE = 32
+BATCH_SIZE = 8
+EVAL_BATCH_SIZE = 64
 SAMPLE_RATE = 44100
 MAX_AUDIO_LEN_IN_SECONDS = 21
 MIN_AUDIO_LEN_IN_SECONDS = 0
@@ -340,7 +340,7 @@ trainer = Trainer(
     TrainerArgs(
         restore_path=RESTORE_PATH if RESTORE_PATH else "",
         skip_train_epoch=SKIP_TRAIN_EPOCH,
-        grad_accum_steps=256,
+        grad_accum_steps=32,
     ),
     config,
     output_path=EXPMT_PATH,
