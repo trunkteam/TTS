@@ -53,7 +53,7 @@ REF_EXPMT_PATH = os.path.join(BASE_PATH, f"expmt/ytts/{REF_EXP_ID}")
 PHN_CACHE_PATH = os.path.join(REF_EXPMT_PATH, f"phn_cache_{PHN_CACHE_VERSION}")
 SPK_EMB_CACHE_PATH = os.path.join(REF_EXPMT_PATH, f"spk_emb_{SPK_EMBEDDING_VERSION}")
 LNG_EMB_CACHE_PATH = os.path.join(REF_EXPMT_PATH, f"lng_emb_{LNG_EMBEDDING_VERSION}")
-RESTORE_PATH = os.path.join(BASE_PATH, "models/ytts/v1_half_ckpt.pth")
+RESTORE_PATH = os.path.join(BASE_PATH, "models/ytts/v3_best_ckpt.pth")
 
 os.makedirs(PHN_CACHE_PATH, exist_ok=True)
 # os.makedirs(SPK_EMB_CACHE_PATH, exist_ok=True)
@@ -69,7 +69,7 @@ with open(LNG_EMB_FILE, mode="w") as lef:
     json.dump(LNG_EMB, lef)
 
 SKIP_TRAIN_EPOCH = False
-BATCH_SIZE = 8
+BATCH_SIZE = 24
 EVAL_BATCH_SIZE = 64
 SAMPLE_RATE = 44100
 MAX_AUDIO_LEN_IN_SECONDS = 21
@@ -174,7 +174,7 @@ audio_config = VitsAudioConfig(
 model_args = VitsArgs(
     use_sdp=True,
     spec_segment_size=64,
-    hidden_channels=256,
+    hidden_channels=192,
     dp_hidden_channels=256,
     d_vector_file=D_VECTOR_FILES,
     use_d_vector_file=True,
@@ -210,7 +210,7 @@ config = VitsConfig(
     batch_size=BATCH_SIZE,
     batch_group_size=48,
     eval_batch_size=EVAL_BATCH_SIZE,
-    num_loader_workers=12,
+    num_loader_workers=24,
     print_step=100,
     plot_step=100,
     log_model_step=100,
@@ -340,7 +340,7 @@ trainer = Trainer(
     TrainerArgs(
         restore_path=RESTORE_PATH if RESTORE_PATH else "",
         skip_train_epoch=SKIP_TRAIN_EPOCH,
-        grad_accum_steps=32,
+        grad_accum_steps=64,
     ),
     config,
     output_path=EXPMT_PATH,
