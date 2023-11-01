@@ -126,11 +126,11 @@ DATASETS_CONFIG_LIST = [
                 d_name="en_se_v1",
                 lang="en",
                 data_path=DATA_PATH_EN),
-    get_dataset(manifest_train="manifest_dur.json",
-                manifest_eval="manifest_eval_dur.json",
-                d_name="en_az_gen_v1",
-                lang="en",
-                data_path=DATA_PATH_EN),
+    # get_dataset(manifest_train="manifest_dur.json",
+    #             manifest_eval="manifest_eval_dur.json",
+    #             d_name="en_az_gen_v1",
+    #             lang="en",
+    #             data_path=DATA_PATH_EN),
 
 ]
 

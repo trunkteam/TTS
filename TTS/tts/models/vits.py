@@ -1,12 +1,14 @@
 import math
-import numpy as np
 import os
+from dataclasses import dataclass, field, replace
+from itertools import chain
+from typing import Dict, List, Tuple, Union
+
+import numpy as np
 import torch
 import torch.distributed as dist
 import torchaudio
 from coqpit import Coqpit
-from dataclasses import dataclass, field, replace
-from itertools import chain
 from librosa.filters import mel as librosa_mel_fn
 from torch import nn
 from torch.cuda.amp.autocast_mode import autocast
@@ -15,7 +17,6 @@ from torch.utils.data import DataLoader
 from torch.utils.data.sampler import WeightedRandomSampler
 from trainer.torch import DistributedSampler, DistributedSamplerWrapper
 from trainer.trainer_utils import get_optimizer, get_scheduler
-from typing import Dict, List, Tuple, Union
 
 from TTS.tts.configs.shared_configs import CharactersConfig
 from TTS.tts.datasets.dataset import TTSDataset, _parse_sample
