@@ -30,10 +30,14 @@ class SpkEmbedder(object):
         aud = taf.resample(aud, sr, 16000)
         aud = aud.squeeze(0).to(device)
         aud_feat = self.feature_extractor(aud, padding=True, return_tensors="pt", sampling_rate=16000)
+        aud.detach()
+        del aud
         aud_feat = aud_feat.to(device)
         spk_emb = self.model(**aud_feat).embeddings
-        spk_emb = torch.nn.functional.normalize(spk_emb, dim=-1).cpu()
-        spk_emb = spk_emb.squeeze(0)
+        spk_emb = torch.nn.functional.normalize(spk_emb, dim=-1)
+        spk_emb = spk_emb.squeeze(0).detach().cpu()
+        aud_feat.detach()
+        del aud_feat
         return spk_emb
 
 
