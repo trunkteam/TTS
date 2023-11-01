@@ -36,7 +36,6 @@ class SpkEmbedder(object):
         spk_emb = self.model(**aud_feat).embeddings
         spk_emb = torch.nn.functional.normalize(spk_emb, dim=-1)
         spk_emb = spk_emb.squeeze(0).detach().cpu()
-        aud_feat.detach()
         del aud_feat
         return spk_emb
 
