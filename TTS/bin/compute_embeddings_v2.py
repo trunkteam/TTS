@@ -13,6 +13,7 @@ from TTS.config.shared_configs import BaseDatasetConfig
 from TTS.tts.datasets import load_tts_samples
 from TTS.tts.utils.managers import save_file
 from TTS.tts.utils.speakers import SpeakerManager
+from TTS.encoder.configs.speaker_encoder_config import SpeakerEncoderConfig
 
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
@@ -77,7 +78,8 @@ def compute_embeddings(
 
     spk_embedder = SpkEmbedder()
 
-    class_name_key = encoder_manager.encoder_config.class_name_key
+    # class_name_key = encoder_manager.encoder_config.class_name_key
+    class_name_key = SpeakerEncoderConfig.class_name_key
 
     # compute speaker embeddings
     if old_speakers_file is not None and old_append:
