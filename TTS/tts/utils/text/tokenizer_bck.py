@@ -1,6 +1,5 @@
 from typing import Callable, Dict, List, Union
 
-from TTS.tts.layers.vits.tokenizer import VoiceBpeTokenizer
 from TTS.tts.utils.text import cleaners
 from TTS.tts.utils.text.characters import Graphemes, IPAPhonemes
 from TTS.tts.utils.text.phonemizers import DEF_LANG_TO_PHONEMIZER, get_phonemizer_by_name
@@ -37,15 +36,13 @@ class TTSTokenizer:
     """
 
     def __init__(
-            self,
-            use_phonemes=False,
-            text_cleaner: Callable = None,
-            characters: "BaseCharacters" = None,
-            phonemizer: Union["Phonemizer", Dict] = None,
-            add_blank: bool = False,
-            use_eos_bos=False,
-            use_bpe_tokenizer: bool = False,
-            bpe_tokenizer_vocab: str = None
+        self,
+        use_phonemes=False,
+        text_cleaner: Callable = None,
+        characters: "BaseCharacters" = None,
+        phonemizer: Union["Phonemizer", Dict] = None,
+        add_blank: bool = False,
+        use_eos_bos=False,
     ):
         self.text_cleaner = text_cleaner
         self.use_phonemes = use_phonemes
@@ -54,11 +51,6 @@ class TTSTokenizer:
         self.characters = characters
         self.not_found_characters = []
         self.phonemizer = phonemizer
-        self.use_bpe_tokenizer = use_bpe_tokenizer
-        self.bpe_tokenizer_vocab = bpe_tokenizer_vocab
-        if use_bpe_tokenizer:
-            assert bpe_tokenizer_vocab is not None
-            self.bpe_tokenizer = VoiceBpeTokenizer(vocab_file=bpe_tokenizer_vocab)
 
     @property
     def characters(self):
@@ -72,30 +64,24 @@ class TTSTokenizer:
 
     def encode(self, text: str) -> List[int]:
         """Encodes a string of text as a sequence of IDs."""
-        if self.use_bpe_tokenizer:
-            token_ids = self.bpe_tokenizer.encode(text)
-        else:
-            token_ids = []
-            for char in text:
-                try:
-                    idx = self.characters.char_to_id(char)
-                    token_ids.append(idx)
-                except KeyError:
-                    # discard but store not found characters
-                    if char not in self.not_found_characters:
-                        self.not_found_characters.append(char)
-                        print(text)
-                        print(f" [!] Character {repr(char)} not found in the vocabulary. Discarding it.")
+        token_ids = []
+        for char in text:
+            try:
+                idx = self.characters.char_to_id(char)
+                token_ids.append(idx)
+            except KeyError:
+                # discard but store not found characters
+                if char not in self.not_found_characters:
+                    self.not_found_characters.append(char)
+                    print(text)
+                    print(f" [!] Character {repr(char)} not found in the vocabulary. Discarding it.")
         return token_ids
 
     def decode(self, token_ids: List[int]) -> str:
         """Decodes a sequence of IDs to a string of text."""
-        if self.use_bpe_tokenizer:
-            text = self.bpe_tokenizer.decode(token_ids)
-        else:
-            text = ""
-            for token_id in token_ids:
-                text += self.characters.id_to_char(token_id)
+        text = ""
+        for token_id in token_ids:
+            text += self.characters.id_to_char(token_id)
         return text
 
     def text_to_ids(self, text: str, language: str = None) -> List[int]:  # pylint: disable=unused-argument
@@ -120,18 +106,14 @@ class TTSTokenizer:
         # TODO: text cleaner should pick the right routine based on the language
         if self.text_cleaner is not None:
             text = self.text_cleaner(text)
-        if self.use_bpe_tokenizer:
-            token_ids = self.encode(text)
-        else:
-            if self.use_phonemes:
-                text = self.phonemizer.phonemize(text, separator="", language=language)
-            token_ids = self.encode(text)
-            if self.add_blank:
-                token_ids = self.intersperse_blank_char(token_ids, True)
-            if self.use_eos_bos:
-                token_ids = self.pad_with_bos_eos(token_ids)
-
-        return token_ids
+        if self.use_phonemes:
+            text = self.phonemizer.phonemize(text, separator="", language=language)
+        text = self.encode(text)
+        if self.add_blank:
+            text = self.intersperse_blank_char(text, True)
+        if self.use_eos_bos:
+            text = self.pad_with_bos_eos(text)
+        return text
 
     def ids_to_text(self, id_sequence: List[int]) -> str:
         """Converts a sequence of token IDs to a string of text."""
@@ -228,14 +210,7 @@ class TTSTokenizer:
 
         return (
             TTSTokenizer(
-                use_phonemes=config.use_phonemes,
-                text_cleaner=text_cleaner,
-                characters=characters,
-                phonemizer=phonemizer,
-                add_blank=config.add_blank,
-                use_eos_bos=config.enable_eos_bos_chars,
-                use_bpe_tokenizer=config.use_bpe_tokenizer,
-                bpe_tokenizer_vocab=config.bpe_tokenizer_vocab
+                config.use_phonemes, text_cleaner, characters, phonemizer, config.add_blank, config.enable_eos_bos_chars
             ),
             new_config,
         )

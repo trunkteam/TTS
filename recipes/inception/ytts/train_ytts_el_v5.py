@@ -8,35 +8,9 @@ from TTS.bin.compute_embeddings_v2 import compute_embeddings
 from TTS.config.shared_configs import BaseDatasetConfig
 from TTS.tts.configs.vits_config import VitsConfig
 from TTS.tts.datasets import load_tts_samples
-from TTS.tts.models.vits import CharactersConfig, Vits, VitsArgs, VitsAudioConfig
+from TTS.tts.models.vits import Vits, VitsArgs, VitsAudioConfig
 
 torch.set_num_threads(24)
-
-CHARACTERS_PHN = "".join(sorted(
-    {' ', 'a', 'b', 'c', 'd', 'e', 'f', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w',
-     'x', 'z', 'æ', 'ç', 'ð', 'ħ', 'ŋ', 'ɐ', 'ɑ', 'ɒ', 'ɔ', 'ɕ', 'ɖ', 'ə', 'ɚ', 'ɛ', 'ɜ', 'ɟ', 'ɡ', 'ɣ', 'ɨ', 'ɪ', 'ɬ',
-     'ɭ', 'ɲ', 'ɳ', 'ɹ', 'ɾ', 'ʂ', 'ʃ', 'ʈ', 'ʊ', 'ʋ', 'ʌ', 'ʒ', 'ʔ', 'ʕ', 'ʰ', 'ʲ', 'ˈ', 'ˌ', 'ː', 'ˤ', '̃', '̩', '̪',
-     'θ', 'χ', 'ᵻ'}))
-
-CHARACTERS = "".join(
-    sorted(
-        {' ', '&', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
-         'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p',
-         'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '£', 'Â', 'à', 'á', 'â', 'ã', 'ç', 'è', 'é', 'í', 'î', 'ñ',
-         'ó', 'ô', 'ö', 'ú', 'û', 'ü', 'ā', 'ę', 'ł', 'Š', 'ū', 'ǎ', 'ǐ', 'ء', 'آ', 'أ', 'ؤ', 'إ', 'ئ', 'ا', 'ب', 'ة',
-         'ت', 'ث', 'ج', 'ح', 'خ', 'د', 'ذ', 'ر', 'ز', 'س', 'ش', 'ص', 'ض', 'ط', 'ظ', 'ع', 'غ', 'ـ', 'ف', 'ق', 'ك', 'ل',
-         'م', 'ن', 'ه', 'و', 'ى', 'ي', 'ً', 'ٌ', 'ٍ', 'َ', 'ُ', 'ِ', 'ّ', 'ْ', 'ं', 'अ', 'आ', 'इ', 'ई', 'उ', 'ए', 'औ',
-         'क', 'ख', 'ग', 'घ', 'च', 'छ', 'ज', 'झ', 'ट', 'ठ', 'ड', 'ढ', 'ण', 'त', 'थ', 'द', 'ध', 'न', 'प', 'फ', 'ब', 'भ',
-         'म', 'य', 'र', 'ल', 'व', 'श', 'ष', 'स', 'ह', '़', 'ा', 'ि', 'ी', 'ु', 'ू', 'ृ', 'े', 'ै', 'ो', 'ौ', '्', '।'}
-    )
-)
-
-PUNCTUATIONS = "".join(
-    sorted(
-        {'!', '"', "'", '(', ')', ',', '-', '.', ':', ';', '?', '[', ']', '،', '؛', '؟', '–', '—'}
-    )
-)
-
 RUN_NAME = "YTTS-ML-EL"
 EXP_ID = "v5_ML_EL"
 REF_EXP_ID = "v5_ML_EL"
@@ -126,11 +100,11 @@ DATASETS_CONFIG_LIST = [
                 d_name="en_se_v1",
                 lang="en",
                 data_path=DATA_PATH_EN),
-    # get_dataset(manifest_train="manifest_dur.json",
-    #             manifest_eval="manifest_eval_dur.json",
-    #             d_name="en_az_gen_v1",
-    #             lang="en",
-    #             data_path=DATA_PATH_EN),
+    get_dataset(manifest_train="manifest_dur.json",
+                manifest_eval="manifest_eval_dur.json",
+                d_name="en_az_gen_v1",
+                lang="en",
+                data_path=DATA_PATH_EN),
 
 ]
 
@@ -182,9 +156,9 @@ model_args = VitsArgs(
     num_layers_dp_flow=32,
     num_layers_flow=32,
     num_layers_posterior_encoder=32,
+    upsample_rates_decoder=[8, 8, 4, 2],
     # speaker_encoder_model_path=SPEAKER_ENCODER_CHECKPOINT_PATH,
     # speaker_encoder_config_path=SPEAKER_ENCODER_CONFIG_PATH,
-    upsample_rates_decoder=[8, 8, 4, 2],
     # use_speaker_encoder_as_loss=True,
     # encoder_sample_rate=44100,
     # use_language_embedding=True,
@@ -217,17 +191,6 @@ config = VitsConfig(
     compute_input_seq_cache=True,
     add_blank=True,
     text_cleaner="gen_cleaners",
-    characters=CharactersConfig(
-        characters_class="TTS.tts.models.vits.VitsCharacters",
-        pad="~",
-        eos=">",
-        bos="<",
-        blank="^",
-        characters=CHARACTERS,
-        punctuations=PUNCTUATIONS,
-        is_unique=True,
-        is_sorted=True,
-    ),
     start_by_longest=True,
     datasets=DATASETS_CONFIG_LIST,
     cudnn_benchmark=False,
@@ -237,6 +200,8 @@ config = VitsConfig(
     use_d_vector_file=True,
     d_vector_dim=2560,
     d_vector_file=D_VECTOR_FILES,
+    use_bpe_tokenizer=True,
+    bpe_tokenizer_vocab=os.path.join(BASE_PATH, "data/tts/token/v1/model/bpe_tokenizer.json"),
     speaker_encoder_loss_alpha=9.0,
     use_language_weighted_sampler=True,
     use_weighted_sampler=True,

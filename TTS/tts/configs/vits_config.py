@@ -169,6 +169,8 @@ class VitsConfig(BaseTTSConfig):
     use_d_vector_file: bool = False
     d_vector_file: List[str] = None
     d_vector_dim: int = None
+    use_bpe_tokenizer: bool = False
+    bpe_tokenizer_vocab: str = None
 
     def __post_init__(self):
         for key, val in self.model_args.items():
