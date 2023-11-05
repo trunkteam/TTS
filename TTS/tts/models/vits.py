@@ -1483,9 +1483,9 @@ class Vits(BaseTTS):
         # get d_vectors from audio file names
         if self.speaker_manager is not None and self.speaker_manager.embeddings and self.args.use_d_vector_file:
             d_vector_mapping = self.speaker_manager.embeddings
-            print(f"d_vector_mapping: {d_vector_mapping}")
+            # print(f"d_vector_mapping: {d_vector_mapping}")
             d_vectors = [d_vector_mapping[w]["embedding"] for w in batch["audio_unique_names"]]
-            # print(f"d_vectors: {d_vectors}")
+            print(f"d_vectors: {d_vectors[-1].shape}")
             d_vectors = torch.FloatTensor(d_vectors)
             # print(f"d_vectors.shape: {d_vectors.shahpe}")
 
