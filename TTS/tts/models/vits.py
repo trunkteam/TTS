@@ -256,7 +256,7 @@ def get_attribute_balancer_weights(items: list, attr_name: str, multi_dict: dict
 class VitsDataset(TTSDataset):
     def __init__(self, model_args, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.pad_id = self.tokenizer.characters.pad_id
+        self.pad_id = self.tokenizer.pad_id
         self.model_args = model_args
 
     def __getitem__(self, idx):

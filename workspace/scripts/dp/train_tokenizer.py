@@ -4,6 +4,7 @@ from tokenizers import Tokenizer, decoders, models, pre_tokenizers, trainers
 
 is_train = True
 
+PAD_TOKEN = "[PAD]"
 UNK_TOKEN = "[UNK]"
 START_TOKEN = "[START]"
 STOP_TOKEN = "[STOP]"
@@ -25,7 +26,7 @@ if is_train:
 
     trainer = trainers.BpeTrainer(
         vocab_size=4096,
-        special_tokens=[START_TOKEN, STOP_TOKEN, SPACE_TOKEN, UNK_TOKEN],
+        special_tokens=[PAD_TOKEN, START_TOKEN, STOP_TOKEN, SPACE_TOKEN, UNK_TOKEN],
         max_token_length=3,
     )
 
