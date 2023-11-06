@@ -276,7 +276,7 @@ class VitsDataset(TTSDataset):
         # this is a shameful 🤭 hack to prevent longer phonemes
         # TODO: find a better fix
         if len(token_ids) > self.max_text_len or wav.shape[1] < self.min_audio_len:
-            print(f"Token length check: {len(token_ids)}:{self.max_text_len}")
+            # print(f"Token length check: {len(token_ids)}:{self.max_text_len}")
             self.rescue_item_idx += 1
             return self.__getitem__(self.rescue_item_idx)
 
@@ -1248,9 +1248,9 @@ class Vits(BaseTTS):
 
         spec_lens = batch["spec_lens"]
 
-        print(f"optimizer_idx: {optimizer_idx}")
-        print(f"tokens: {batch['tokens'].shape}")
-        print(f"token_lenghts: {batch['token_lens'].shape}")
+        # print(f"optimizer_idx: {optimizer_idx}")
+        # print(f"tokens: {batch['tokens'].shape}")
+        # print(f"token_lenghts: {batch['token_lens'].shape}")
 
         if optimizer_idx == 0:
             tokens = batch["tokens"]
