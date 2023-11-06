@@ -1,4 +1,5 @@
 import json
+
 import torch
 from tokenizers import Tokenizer
 
@@ -22,6 +23,7 @@ class VoiceBpeTokenizer:
 
     def encode(self, txt):
         txt = txt.replace(" ", "[SPACE]")
+        txt = f"[START]{txt}[STOP]"
         return self.tokenizer.encode(txt).ids
 
     def decode(self, seq):
@@ -29,6 +31,7 @@ class VoiceBpeTokenizer:
             seq = seq.cpu().numpy()
         txt = self.tokenizer.decode(seq, skip_special_tokens=False).replace(" ", "")
         txt = txt.replace("[SPACE]", " ")
+        txt = txt.replace("[START]", "")
         txt = txt.replace("[STOP]", "")
         txt = txt.replace("[UNK]", "")
         return txt
