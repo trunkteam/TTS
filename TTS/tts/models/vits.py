@@ -1248,6 +1248,10 @@ class Vits(BaseTTS):
 
         spec_lens = batch["spec_lens"]
 
+        print(f"optimizer_idx: {optimizer_idx}")
+        print(f"tokens: {batch['tokens']}")
+        print(f"token_lenghts: {batch['token_lens']}")
+
         if optimizer_idx == 0:
             tokens = batch["tokens"]
             token_lenghts = batch["token_lens"]
