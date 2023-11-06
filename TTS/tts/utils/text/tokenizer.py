@@ -68,7 +68,8 @@ class TTSTokenizer:
     def pad_id(self):
         if self.use_bpe_tokenizer:
             return self.bpe_tokenizer.tokenizer.encode("[PAD]").ids[0]
-        return self.characters.char_to_id(self.characters.pad) if self.characters.pad else None
+        else:
+            return self._characters.char_to_id(self._characters.pad) if self._characters.pad else None
 
     @characters.setter
     def characters(self, new_characters):
