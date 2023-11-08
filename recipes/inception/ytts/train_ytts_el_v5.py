@@ -143,7 +143,7 @@ audio_config = VitsAudioConfig(
 model_args = VitsArgs(
     use_sdp=True,
     spec_segment_size=64,
-    hidden_channels=192,
+    hidden_channels=256,
     dp_hidden_channels=256,
     d_vector_file=D_VECTOR_FILES,
     use_d_vector_file=True,
@@ -300,7 +300,6 @@ trainer = Trainer(
     TrainerArgs(
         restore_path=RESTORE_PATH if RESTORE_PATH else "",
         skip_train_epoch=SKIP_TRAIN_EPOCH,
-        grad_accum_steps=4,
     ),
     config,
     output_path=EXPMT_PATH,
