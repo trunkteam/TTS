@@ -30,7 +30,7 @@ class XttsConfig(BaseTTSConfig):
             which in turn is used to divide the score of the sequence. Since the score is the log likelihood of the sequence (i.e. negative),
             length_penalty > 0.0 promotes longer sequences, while length_penalty < 0.0 encourages shorter sequences.
 
-        reperation_penalty (float):
+        repetition_penalty (float):
             The parameter for repetition penalty. 1.0 means no penalty. Defaults to `2.0`.
 
         top_p (float):
@@ -59,6 +59,16 @@ class XttsConfig(BaseTTSConfig):
 
         decoder_sampler (str):
             Diffusion sampler to be used. `ddim` or `dpm++2m`. Defaults to `ddim`.
+
+        gpt_cond_len (int):
+            Secs audio to be used as conditioning for the autoregressive model. Defaults to `3`.
+
+        max_ref_len (int):
+            Maximum number of seconds of audio to be used as conditioning for the decoder. Defaults to `10`.
+
+        sound_norm_refs (bool):
+            Whether to normalize the conditioning audio. Defaults to `False`.
+
     Note:
         Check :class:`TTS.tts.configs.shared_configs.BaseTTSConfig` for the inherited parameters.
 
@@ -74,7 +84,24 @@ class XttsConfig(BaseTTSConfig):
     audio: XttsAudioConfig = field(default_factory=XttsAudioConfig)
     model_dir: str = None
     languages: List[str] = field(
-        default_factory=lambda: ["en", "es", "fr", "de", "it", "pt", "pl", "tr", "ru", "nl", "cs", "ar", "zh-cn"]
+        default_factory=lambda: [
+            "en",
+            "es",
+            "fr",
+            "de",
+            "it",
+            "pt",
+            "pl",
+            "tr",
+            "ru",
+            "nl",
+            "cs",
+            "ar",
+            "zh-cn",
+            "hu",
+            "ko",
+            "ja",
+        ]
     )
 
     # inference params
@@ -88,3 +115,8 @@ class XttsConfig(BaseTTSConfig):
     num_gpt_outputs: int = 1
     decoder_iterations: int = 30
     decoder_sampler: str = "ddim"
+
+    # cloning
+    gpt_cond_len: int = 3
+    max_ref_len: int = 10
+    sound_norm_refs: bool = False
