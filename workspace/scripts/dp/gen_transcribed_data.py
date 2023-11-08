@@ -17,22 +17,7 @@ src_maps = [
         "language": "en",
         "audio_file": "/data/asr/workspace/audio/tts/data/english/lh_spotify/KF",
         "d_set_name": "spot_kf",
-    },
-    {
-        "language": "en",
-        "audio_file": "/data/asr/workspace/audio/tts/data/english/lh_spotify/dwl",
-        "d_set_name": "spot_lh",
-    },
-    {
-        "language": "ar",
-        "audio_file": "/data/asr/workspace/audio/tts/data/arabic_spotify/spt_arabic_data/sky_news_spt",
-        "d_set_name": "spot_sk",
-    },
-    {
-        "language": "ar",
-        "audio_file": "/data/asr/workspace/audio/tts/data/arabic_spotify/spt_arabic_data/dubai_future_foundation",
-        "d_set_name": "spot_df",
-    },
+    }
 ]
 
 for src_map in src_maps:
