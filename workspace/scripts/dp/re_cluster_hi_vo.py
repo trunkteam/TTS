@@ -17,9 +17,10 @@ _log = logging.getLogger("RCH")
 
 den_model = pretrained.master64()
 den_model = den_model.cuda() if torch.cuda.is_available() else den_model
+device = "cuda:0" if torch.cuda.is_available() else "cpu"
 
 feature_extractor = Wav2Vec2FeatureExtractor.from_pretrained('microsoft/wavlm-base-plus-sv')
-se_model = WavLMForXVector.from_pretrained('microsoft/wavlm-base-plus-sv').cuda()
+se_model = WavLMForXVector.from_pretrained('microsoft/wavlm-base-plus-sv').to(device)
 
 src_man = "data/tts/v3/hi/manifest_spk_cluster.json"
 tgt_man = "data/tts/v3/hi/manifest_spk_cluster_cln.json"
@@ -51,7 +52,7 @@ with open(src_man, encoding="utf-8") as sm:
                     aud_feat = feature_extractor(aud.squeeze(0),
                                                  padding=True,
                                                  return_tensors="pt",
-                                                 sampling_rate=16000).cuda()
+                                                 sampling_rate=16000).to(device)
                     spk_emb = se_model(**aud_feat).embeddings
                     spk_emb = torch.nn.functional.normalize(spk_emb, dim=-1).cpu().squeeze(0)
                     tgt_emb_file = os.path.join(emb_dir, f"{u_fid}.pth")
