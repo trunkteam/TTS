@@ -21,8 +21,8 @@ cln_dir = "data/tts/v3/hi/cln"
 
 os.makedirs(cln_dir, exist_ok=True)
 
-with open(src_man, encoding="ytf-8") as sm:
-    with open(tgt_man, encoding="ytf-8", mode="w") as tm:
+with open(src_man, encoding="utf-8") as sm:
+    with open(tgt_man, encoding="utf-8", mode="w") as tm:
         for line in sm:
             jd = json.loads(line.strip("\n").strip())
             src_af = jd["audio_filepath"]
