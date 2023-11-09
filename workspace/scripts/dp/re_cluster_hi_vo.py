@@ -35,5 +35,5 @@ with open(src_man, encoding="utf-8") as sm:
             with torch.no_grad():
                 # den_wav = convert_audio(aud.cuda(), sr, sample_rate, 1)
                 _log.info(f"aud_bf: {aud.shape}")
-                aud = den_model(aud.squeeze(0))[0]
+                aud = den_model(aud)[0]
                 _log.info(f"aud_af: {aud.shape}")
