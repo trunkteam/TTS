@@ -27,7 +27,7 @@ REF_EXPMT_PATH = os.path.join(BASE_PATH, f"expmt/ytts/{REF_EXP_ID}")
 PHN_CACHE_PATH = os.path.join(REF_EXPMT_PATH, f"phn_cache_{PHN_CACHE_VERSION}")
 SPK_EMB_CACHE_PATH = os.path.join(REF_EXPMT_PATH, f"spk_emb_{SPK_EMBEDDING_VERSION}")
 LNG_EMB_CACHE_PATH = os.path.join(REF_EXPMT_PATH, f"lng_emb_{LNG_EMBEDDING_VERSION}")
-RESTORE_PATH = os.path.join(BASE_PATH, "models/ytts/en/model_file.pth")
+RESTORE_PATH = os.path.join(BASE_PATH, "models/ytts/v5_best_ckpt.pth")
 
 os.makedirs(PHN_CACHE_PATH, exist_ok=True)
 # os.makedirs(SPK_EMB_CACHE_PATH, exist_ok=True)

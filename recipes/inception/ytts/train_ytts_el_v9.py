@@ -27,7 +27,7 @@ REF_EXPMT_PATH = os.path.join(BASE_PATH, f"expmt/ytts/{REF_EXP_ID}")
 PHN_CACHE_PATH = os.path.join(REF_EXPMT_PATH, f"phn_cache_{PHN_CACHE_VERSION}")
 SPK_EMB_CACHE_PATH = os.path.join(REF_EXPMT_PATH, f"spk_emb_{SPK_EMBEDDING_VERSION}")
 LNG_EMB_CACHE_PATH = os.path.join(REF_EXPMT_PATH, f"lng_emb_{LNG_EMBEDDING_VERSION}")
-RESTORE_PATH = os.path.join(BASE_PATH, "models/ytts/v3_best_ckpt.pth")
+RESTORE_PATH = os.path.join(BASE_PATH, "models/ytts/v9_best_ckpt.pth")
 
 os.makedirs(PHN_CACHE_PATH, exist_ok=True)
 # os.makedirs(SPK_EMB_CACHE_PATH, exist_ok=True)
@@ -43,8 +43,8 @@ with open(LNG_EMB_FILE, mode="w") as lef:
     json.dump(LNG_EMB, lef)
 
 SKIP_TRAIN_EPOCH = False
-BATCH_SIZE = 32
-EVAL_BATCH_SIZE = 32
+BATCH_SIZE = 24
+EVAL_BATCH_SIZE = 24
 SAMPLE_RATE = 44100
 MAX_AUDIO_LEN_IN_SECONDS = 21
 MIN_AUDIO_LEN_IN_SECONDS = 0
