@@ -35,7 +35,7 @@ with torch.no_grad():
 
     aud = taf.resample(aud, sr, 16000)
 
-    diarization = pipeline({"waveform": aud, "sample_rate": sr}, min_speakers=1, max_speakers=10)
+    diarization = pipeline({"waveform": aud, "sample_rate": 16000}, min_speakers=1, max_speakers=10)
 
     seg_count = 0
     spk_sets = set()
