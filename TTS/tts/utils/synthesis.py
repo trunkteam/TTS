@@ -217,6 +217,7 @@ def synthesis(
 
     text_inputs = numpy_to_torch(text_inputs, torch.long, device=device)
     text_inputs = text_inputs.unsqueeze(0)
+    print(text_inputs)
     # synthesize voice
     outputs = run_model_torch(
         model,

@@ -32,12 +32,13 @@ with torch.no_grad():
     if torch.cuda.is_available():
         aud = aud.cuda()
     aud = den_model(aud)[0]
-    aud = aud.detach().cpu()
 
     diarization = pipeline({"waveform": aud, "sample_rate": 16000}, min_speakers=1, max_speakers=10)
 
     seg_count = 0
     spk_sets = set()
+
+    aud = aud.detach().cpu()
 
     for turn, spk_id, speaker in diarization.itertracks(yield_label=True):
         spk_sets.add(speaker)
