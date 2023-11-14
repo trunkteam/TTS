@@ -26,6 +26,8 @@ with torch.no_grad():
     if aud.shape[0] > 1:
         aud = torch.mean(aud, dim=0).unsqueeze(0)
 
+    torchaudio.save(os.path.join(tgt_vid_dir, "vid_08_original.wav"), aud, sr)
+
     aud = taf.resample(aud, sr, 16000)
 
     diarization = pipeline({"waveform": aud, "sample_rate": sr}, min_speakers=1, max_speakers=10)
