@@ -35,6 +35,8 @@ with torch.no_grad():
     if torch.cuda.is_available():
         aud = aud.cuda()
     aud = den_model(aud)[0]
+    aud = aud.detach().cpu()
+
     for turn, spk_id, speaker in diarization.itertracks(yield_label=True):
         spk_sets.add(speaker)
         start = turn.start / 1000
