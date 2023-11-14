@@ -39,8 +39,8 @@ with torch.no_grad():
 
     for turn, spk_id, speaker in diarization.itertracks(yield_label=True):
         spk_sets.add(speaker)
-        start = turn.start / 1000
-        end = turn.end / 1000
+        start = turn.start
+        end = turn.end
 
         effects = [
             ['trim', f'{start}', f'{end - start}'],
