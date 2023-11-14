@@ -44,6 +44,7 @@ with torch.no_grad():
         start = turn.start
         end = turn.end
 
+        print(f"turn: {turn}, spk_id: {spk_id}, speaker:{speaker}")
         effects = [
             ['trim', f'{start}', f'{end - start}'],
         ]
