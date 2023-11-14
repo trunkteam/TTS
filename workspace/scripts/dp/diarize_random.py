@@ -26,10 +26,10 @@ with torch.no_grad():
     if aud.shape[0] > 1:
         aud = torch.mean(aud, dim=0).unsqueeze(0)
 
-    if torch.cuda.is_available():
-        aud = aud.cuda()
-    aud = den_model(aud)[0]
-    aud = aud.detach().cpu()
+    # if torch.cuda.is_available():
+    #     aud = aud.cuda()
+    # aud = den_model(aud)[0]
+    # aud = aud.detach().cpu()
 
     torchaudio.save(os.path.join(tgt_vid_dir, "vid_08_original.wav"), aud, sr)
 
