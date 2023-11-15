@@ -317,11 +317,13 @@ class TTSDataset(Dataset):
             item["audio_length"] = audio_length
             item["text_length"] = text_length
             new_samples += [item]
+        print(f"new_samples[-1]: {new_samples[-1]}")
         return new_samples
 
     @staticmethod
     def filter_by_length(lengths: List[int], min_len: int, max_len: int):
         idxs = np.argsort(lengths)  # ascending order
+        print(f"idxs: {idxs}")
         ignore_idx = []
         keep_idx = []
         for idx in idxs:
@@ -367,6 +369,7 @@ class TTSDataset(Dataset):
         audio_lengths = [i["audio_length"] for i in samples]
         text_ignore_idx, text_keep_idx = self.filter_by_length(text_lengths, self.min_text_len, self.max_text_len)
         audio_ignore_idx, audio_keep_idx = self.filter_by_length(audio_lengths, self.min_audio_len, self.max_audio_len)
+        print
         keep_idx = list(set(audio_keep_idx) & set(text_keep_idx))
         ignore_idx = list(set(audio_ignore_idx) | set(text_ignore_idx))
 
