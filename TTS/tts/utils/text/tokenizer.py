@@ -136,6 +136,11 @@ class TTSTokenizer:
             text = self.text_cleaner(text)
         if self.use_bpe_tokenizer:
             token_ids = self.encode(text)
+            if self.add_blank:
+                blank_token_id = self.bpe_tokenizer.tokenizer.encode("[PAD]").ids[0]
+                intersperse_token_ids = [blank_token_id] * (len(token_ids) * 2 + 1)
+                intersperse_token_ids[1::2] = token_ids
+                token_ids = intersperse_token_ids
         else:
             if self.use_phonemes:
                 text = self.phonemizer.phonemize(text, separator="", language=language)
