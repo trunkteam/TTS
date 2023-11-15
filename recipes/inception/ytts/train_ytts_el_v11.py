@@ -162,7 +162,7 @@ audio_config = VitsAudioConfig(
 # Init VITSArgs setting the arguments that are needed for the YourTTS model
 model_args = VitsArgs(
     use_sdp=True,
-    spec_segment_size=32,
+    spec_segment_size=256,
     hidden_channels=256,
     dp_hidden_channels=256,
     d_vector_file=D_VECTOR_FILES,
