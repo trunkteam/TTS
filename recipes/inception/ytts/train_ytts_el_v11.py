@@ -63,8 +63,8 @@ with open(LNG_EMB_FILE, mode="w") as lef:
     json.dump(LNG_EMB, lef)
 
 SKIP_TRAIN_EPOCH = False
-BATCH_SIZE = 16
-EVAL_BATCH_SIZE = 16
+BATCH_SIZE = 24
+EVAL_BATCH_SIZE = 24
 SAMPLE_RATE = 44100
 MAX_AUDIO_LEN_IN_SECONDS = 18
 MIN_AUDIO_LEN_IN_SECONDS = 0
@@ -162,7 +162,7 @@ audio_config = VitsAudioConfig(
 # Init VITSArgs setting the arguments that are needed for the YourTTS model
 model_args = VitsArgs(
     use_sdp=True,
-    spec_segment_size=64,
+    spec_segment_size=32,
     hidden_channels=256,
     dp_hidden_channels=256,
     d_vector_file=D_VECTOR_FILES,
