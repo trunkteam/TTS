@@ -63,8 +63,8 @@ with open(LNG_EMB_FILE, mode="w") as lef:
     json.dump(LNG_EMB, lef)
 
 SKIP_TRAIN_EPOCH = False
-BATCH_SIZE = 24
-EVAL_BATCH_SIZE = 24
+BATCH_SIZE = 16
+EVAL_BATCH_SIZE = 16
 SAMPLE_RATE = 44100
 MAX_AUDIO_LEN_IN_SECONDS = 18
 MIN_AUDIO_LEN_IN_SECONDS = 0
@@ -170,7 +170,7 @@ model_args = VitsArgs(
     d_vector_dim=512,
     out_channels=2049,
     num_heads_text_encoder=4,
-    num_layers_text_encoder=16,
+    num_layers_text_encoder=12,
     dropout_p_text_encoder=0.3,
     dropout_p_duration_predictor=0.3,
     num_layers_dp_flow=32,
