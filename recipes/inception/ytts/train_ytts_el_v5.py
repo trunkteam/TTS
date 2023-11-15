@@ -46,7 +46,7 @@ SKIP_TRAIN_EPOCH = False
 BATCH_SIZE = 24
 EVAL_BATCH_SIZE = 24
 SAMPLE_RATE = 44100
-MAX_AUDIO_LEN_IN_SECONDS = 18
+MAX_AUDIO_LEN_IN_SECONDS = 16
 MIN_AUDIO_LEN_IN_SECONDS = 0
 NUM_RESAMPLE_THREADS = 10
 
@@ -142,7 +142,7 @@ audio_config = VitsAudioConfig(
 # Init VITSArgs setting the arguments that are needed for the YourTTS model
 model_args = VitsArgs(
     use_sdp=True,
-    spec_segment_size=64,
+    spec_segment_size=256,
     hidden_channels=256,
     dp_hidden_channels=256,
     d_vector_file=D_VECTOR_FILES,
