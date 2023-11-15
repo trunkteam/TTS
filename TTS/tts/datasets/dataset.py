@@ -328,7 +328,7 @@ class TTSDataset(Dataset):
         keep_idx = []
         for idx in idxs:
             length = lengths[idx]
-            print(f"idx: {idx}, length: {length}, min_len: {min_len}, max_len: {max_len}")
+            # print(f"idx: {idx}, length: {length}, min_len: {min_len}, max_len: {max_len}")
             if length < min_len or length > max_len:
                 ignore_idx.append(idx)
             else:
