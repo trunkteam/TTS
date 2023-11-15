@@ -24,7 +24,7 @@ def _parse_sample(item):
     attn_file = None
     emotion_name = None
     duration = None
-    
+
     # print(item)
     if len(item) == 7:
         text, wav_file, speaker_name, language_name, emotion_name, duration, attn_file = item
@@ -53,30 +53,30 @@ def string2filename(string):
 
 class TTSDataset(Dataset):
     def __init__(
-        self,
-        outputs_per_step: int = 1,
-        compute_linear_spec: bool = False,
-        ap: AudioProcessor = None,
-        samples: List[Dict] = None,
-        tokenizer: "TTSTokenizer" = None,
-        compute_f0: bool = False,
-        compute_energy: bool = False,
-        f0_cache_path: str = None,
-        energy_cache_path: str = None,
-        return_wav: bool = False,
-        batch_group_size: int = 0,
-        min_text_len: int = 0,
-        max_text_len: int = float("inf"),
-        min_audio_len: int = 0,
-        max_audio_len: int = float("inf"),
-        phoneme_cache_path: str = None,
-        precompute_num_workers: int = 0,
-        speaker_id_mapping: Dict = None,
-        d_vector_mapping: Dict = None,
-        language_id_mapping: Dict = None,
-        use_noise_augment: bool = False,
-        start_by_longest: bool = False,
-        verbose: bool = False,
+            self,
+            outputs_per_step: int = 1,
+            compute_linear_spec: bool = False,
+            ap: AudioProcessor = None,
+            samples: List[Dict] = None,
+            tokenizer: "TTSTokenizer" = None,
+            compute_f0: bool = False,
+            compute_energy: bool = False,
+            f0_cache_path: str = None,
+            energy_cache_path: str = None,
+            return_wav: bool = False,
+            batch_group_size: int = 0,
+            min_text_len: int = 0,
+            max_text_len: int = float("inf"),
+            min_audio_len: int = 0,
+            max_audio_len: int = float("inf"),
+            phoneme_cache_path: str = None,
+            precompute_num_workers: int = 0,
+            speaker_id_mapping: Dict = None,
+            d_vector_mapping: Dict = None,
+            language_id_mapping: Dict = None,
+            use_noise_augment: bool = False,
+            start_by_longest: bool = False,
+            verbose: bool = False,
     ):
         """Generic 📂 data loader for `tts` models. It is configurable for different outputs and needs.
 
@@ -303,12 +303,12 @@ class TTSDataset(Dataset):
         return sample
 
     @staticmethod
-    def _compute_lengths(samples):
+    def _compute_lengths(samples, sample_rate: int = 44100):
         new_samples = []
         for item in samples:
             # print(f"Item: {item}")
             if "duration" in item:
-                audio_length = float(str(item["duration"]))
+                audio_length = int(float(str(item["duration"]))) * sample_rate
             else:
                 audio_meta = torchaudio.info(item["audio_file"])
                 audio_length = audio_meta.num_frames / audio_meta.sample_rate
@@ -363,7 +363,7 @@ class TTSDataset(Dataset):
         r"""Sort `items` based on text length or audio length in ascending order. Filter out samples out or the length
         range.
         """
-        samples = self._compute_lengths(self.samples)
+        samples = self._compute_lengths(self.samples, self.ap.sample_rate)
 
         # sort items based on the sequence length in ascending order
         text_lengths = [i["text_length"] for i in samples]
@@ -606,11 +606,11 @@ class PhonemeDataset(Dataset):
     """
 
     def __init__(
-        self,
-        samples: Union[List[Dict], List[List]],
-        tokenizer: "TTSTokenizer",
-        cache_path: str,
-        precompute_num_workers=0,
+            self,
+            samples: Union[List[Dict], List[List]],
+            tokenizer: "TTSTokenizer",
+            cache_path: str,
+            precompute_num_workers=0,
     ):
         self.samples = samples
         self.tokenizer = tokenizer
@@ -705,14 +705,14 @@ class F0Dataset:
     """
 
     def __init__(
-        self,
-        samples: Union[List[List], List[Dict]],
-        ap: "AudioProcessor",
-        audio_config=None,  # pylint: disable=unused-argument
-        verbose=False,
-        cache_path: str = None,
-        precompute_num_workers=0,
-        normalize_f0=True,
+            self,
+            samples: Union[List[List], List[Dict]],
+            ap: "AudioProcessor",
+            audio_config=None,  # pylint: disable=unused-argument
+            verbose=False,
+            cache_path: str = None,
+            precompute_num_workers=0,
+            normalize_f0=True,
     ):
         self.samples = samples
         self.ap = ap
@@ -857,13 +857,13 @@ class EnergyDataset:
     """
 
     def __init__(
-        self,
-        samples: Union[List[List], List[Dict]],
-        ap: "AudioProcessor",
-        verbose=False,
-        cache_path: str = None,
-        precompute_num_workers=0,
-        normalize_energy=True,
+            self,
+            samples: Union[List[List], List[Dict]],
+            ap: "AudioProcessor",
+            verbose=False,
+            cache_path: str = None,
+            precompute_num_workers=0,
+            normalize_energy=True,
     ):
         self.samples = samples
         self.ap = ap
