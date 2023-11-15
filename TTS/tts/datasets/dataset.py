@@ -303,12 +303,12 @@ class TTSDataset(Dataset):
         return sample
 
     @staticmethod
-    def _compute_lengths(samples, sample_rate: int = 44100):
+    def _compute_lengths(samples):
         new_samples = []
         for item in samples:
             # print(f"Item: {item}")
             if "duration" in item:
-                audio_length = int(float(str(item["duration"]))) * sample_rate
+                audio_length = int(float(str(item["duration"])))
             else:
                 audio_meta = torchaudio.info(item["audio_file"])
                 audio_length = audio_meta.num_frames / audio_meta.sample_rate
