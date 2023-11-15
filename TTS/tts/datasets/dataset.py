@@ -363,7 +363,7 @@ class TTSDataset(Dataset):
         r"""Sort `items` based on text length or audio length in ascending order. Filter out samples out or the length
         range.
         """
-        samples = self._compute_lengths(self.samples, self.ap.sample_rate)
+        samples = self._compute_lengths(self.samples)
 
         # sort items based on the sequence length in ascending order
         text_lengths = [i["text_length"] for i in samples]
