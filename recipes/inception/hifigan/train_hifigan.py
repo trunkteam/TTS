@@ -8,11 +8,13 @@ from TTS.vocoder.configs.hifigan_config import HifiganConfig
 from TTS.vocoder.datasets.preprocess import load_wav_data
 from TTS.vocoder.models.gan import GAN
 
+BASE_PATH = "/data/asr/workspace/audio/tts2"
+
 output_path = os.path.dirname(os.path.abspath(__file__))
 
 config = HifiganConfig(
-    batch_size=32,
-    eval_batch_size=16,
+    batch_size=128,
+    eval_batch_size=32,
     num_loader_workers=8,
     num_eval_loader_workers=8,
     run_eval=True,
