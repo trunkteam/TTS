@@ -90,6 +90,12 @@ class MultiPeriodDiscriminator(torch.nn.Module):
                 DiscriminatorP(5, use_spectral_norm=use_spectral_norm),
                 DiscriminatorP(7, use_spectral_norm=use_spectral_norm),
                 DiscriminatorP(11, use_spectral_norm=use_spectral_norm),
+
+                DiscriminatorP(13, use_spectral_norm=use_spectral_norm),
+                DiscriminatorP(17, use_spectral_norm=use_spectral_norm),
+                DiscriminatorP(19, use_spectral_norm=use_spectral_norm),
+                DiscriminatorP(23, use_spectral_norm=use_spectral_norm),
+                DiscriminatorP(37, use_spectral_norm=use_spectral_norm),
             ]
         )
 
